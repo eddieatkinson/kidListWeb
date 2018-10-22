@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+  <head>
+    <title>Uhlu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script type="text/javascript" src="scripts.js"></script>
+  </head>
+  <body>
+    <div class="container center">
+      <div class="title">
+        <h2>Uhlu</h2>
+        <h6>
+          <img src="assets/logos/lilAngelsLogo.png" alt="Lil' Angels logo" />
+          LIST MAKER
+        </h6>
+      </div>
+      <div class="form">
+        <p>Please ensure images are named in the following format: <br>
+        "CLASS NAME" space "CHILD NAME" hyphen "NUMBER"<br>
+        i.e. "PS Elana-1234.jpg" or "PK1 Elana Johnson-3.jpg"</p>
+        <p>
+          Do not use dashes within the name (must have dash separating name and JPEG or sequence number). 
+          Also, be sure to separate class and name with a space.
+        </p>
+        <button id="acceptGuidelines" class="btn">OK</button>
+        <div>
+          <label>
+            <input id="doNotShow" type="checkbox" />
+            <span>Do not show this message again.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

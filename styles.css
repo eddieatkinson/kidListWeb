@@ -1,0 +1,25 @@
+body {
+  background: radial-gradient(circle, rgb(106, 56, 102), rgb(37, 33, 69));
+}
+.title img {
+  width: 40px;
+}
+h2 {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  color: white;
+  /* margin-top: 3em; */
+  margin-bottom: 0;
+}
+h6 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: rgb(223, 96, 163);
+  margin-left: -40px;
+}
+.form {
+  background-color: white;
+  width: 70%;
+  height: 100%;
+  padding: 20px;
+  margin: auto;
+  bottom: 0;
+}
