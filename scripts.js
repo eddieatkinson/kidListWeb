@@ -1,14 +1,10 @@
-const electron = require('electron');
-const { map, forEach, uniq, isEmpty } = require('lodash');
-const { ipcRenderer } = electron;
-const { dialog } = electron.remote; // Load remote compnent that contains the dialog dependency
-const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
-const Store = require('electron-store');
-const store = new Store();
+// const { dialog } = electron.remote; // Load remote compnent that contains the dialog dependency
+// const lodash = require(['node_modules/lodash/']);
+// const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
 
 const fullFileNameArray = [];
 let fileLocation;
-const slash = process.platform == 'win32' ? '\\' : '/';
+const slash = navigator.platform == 'Win32' ? '\\' : '/';
 
 function getNames(fileArray) {
   const nameArray = map(fileArray, (file) => {
@@ -110,11 +106,11 @@ function createImageData(nameArray, groupArray, date, school) {
 }
 
 function setNoShowRequirements() {
-  store.set('doNotShow', true);
+  localStorage.setItem('doNotShow', true);
 }
 
 function checkForNoShowRequirements() {
-  const doNotShow = store.get('doNotShow');
+  const doNotShow = localStorage.doNotShow;
   return doNotShow;
 }
 
