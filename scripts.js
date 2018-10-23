@@ -7,8 +7,9 @@ let fileLocation;
 const slash = navigator.platform == 'Win32' ? '\\' : '/';
 
 function getNames(fileArray) {
-  const nameArray = map(fileArray, (file) => {
-    const fileNameWithExtension = getNameWithExtension(file);
+  const nameArray = _.map(fileArray, (file) => {
+    console.log(file.name);
+    const fileNameWithExtension = file.name;
     fullFileNameArray.push(fileNameWithExtension);
     const nameWithoutExtension = removeExtension(fileNameWithExtension);
     const justName = removeJPEGNumber(nameWithoutExtension);
@@ -42,7 +43,7 @@ function getCount(nameArray, uniqueNameArray) {
   const lastNameIndex = nameArray.length - 1;
   const lastUniqueNameIndex = uniqueNameArray.length - 1;
   const countArray = [];
-  forEach(nameArray, (name, index) => {
+  _.forEach(nameArray, (name, index) => {
     if (name === uniqueNameArray[i]) {
       count++;
       if (lastNameIndex === index && lastUniqueNameIndex === i) {
@@ -59,7 +60,7 @@ function getCount(nameArray, uniqueNameArray) {
 
 function addMultiples(count, uniqueNameArray, countArray) {
   const filesWithMultiples = [];
-  forEach(countArray, (currentCount, index) => {
+  _.forEach(countArray, (currentCount, index) => {
     const numberOfProofs = Math.ceil(currentCount / count);
     for (let i = 0; i < numberOfProofs; i++) {
       filesWithMultiples.push(uniqueNameArray[index]);
@@ -69,7 +70,7 @@ function addMultiples(count, uniqueNameArray, countArray) {
 }
 
 function separateClassWithComma(filesWithMultiples) {
-  const commaSeparatedClassArray = map(filesWithMultiples, (file) => {
+  const commaSeparatedClassArray = _.map(filesWithMultiples, (file) => {
     const fileWithComma = file.replace(' ', ',');
     return fileWithComma;
   });
@@ -84,7 +85,7 @@ function createSpreadsheet(commaSeparatedClassArray) {
 function createGroupArray(countArray) {
   let groupNumber = 1;
   const groupArray = [];
-  forEach(countArray, (count) => {
+  _.forEach(countArray, (count) => {
     for (let i = 0; i < count; i++) {
       groupArray.push(groupNumber);
     }
@@ -95,7 +96,7 @@ function createGroupArray(countArray) {
 
 function createImageData(nameArray, groupArray, date, school) {
   let imageDataContent = `Filename,FirstName,LastName,FullName,GroupTest,Class,Packages,ShootDate,SchoolName\r\n`;
-  forEach(fullFileNameArray, (name, index) => {
+  _.forEach(fullFileNameArray, (name, index) => {
     const nameInformation = separateNameAndClass(nameArray[index]);
     const className = nameInformation[0];
     const nameOnly = nameInformation[1];
@@ -136,7 +137,7 @@ $(document).ready(() => {
     <div>
       <form>
         <!-- <input id="file" type="file" multiple /> -->
-        <input class="btn-small" id="readFiles" type="button" value="Select files" />
+        <input class="btn-small" id="readFiles" type="file" multiple value="Select files" />
         <input id="count" type="number" min="1" placeholder="How many images of each child?" />
         <input id="school" type="text" placeholder="School name" />
         <label for="date">Date shot</label>
@@ -160,25 +161,29 @@ $(document).ready(() => {
     }
     formContent.html(formHTML);
   });
-  $('#readFiles').click(() => {
-    dialog.showOpenDialog({ properties: [
-        'openFile', 'multiSelections',
-      ]}, (fileNames) => {
-          nameArray = getNames(fileNames);
-          uniqueNameArray = uniq(nameArray);
-          countArray = getCount(nameArray, uniqueNameArray);
-        });
-  });
-  $('#submit').click(() => {
+  // $('.form').on('click', '#readFiles', () => {
+  //   // dialog.showOpenDialog({ properties: [
+  //   //     'openFile', 'multiSelections',
+  //   //   ]}, (fileNames) => {
+  //   //       nameArray = getNames(fileNames);
+  //   //       uniqueNameArray = uniq(nameArray);
+  //   //       countArray = getCount(nameArray, uniqueNameArray);
+  //   //     });
+  // });
+  $('.form').on('click', '#submit', () => {
+    const files = $('#readFiles')[0].files;
+    console.log(files);
     const count = $('#count').val();
     const school = $('#school').val();
     const date = $('#date').val();
     
-    if (isEmpty(uniqueNameArray)) {
+    if (_.isEmpty(files)) {
       alert('Please select files');
     } else if (!count || !school || !date) {
       alert('All fields are required');
     } else {
+      nameArray = getNames(files);
+      uniqueNameArray = _.uniq(nameArray);
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
       
