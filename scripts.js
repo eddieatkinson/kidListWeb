@@ -191,28 +191,29 @@ $(document).ready(() => {
       const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
       const folderName = getFolderName(fileLocation);
       const includeImageData = $('#imageData:checked').val();
+      const fileWordPlural = includeImageData ? 's' : '';
+      const downloadButton = `<button class="btn-large" id="download">Download file${fileWordPlural}</button>`;
 
       const plural = includeImageData ? 's' : '';
 
       const fileNames = includeImageData ? `"${school}.csv" and "${school}.txt"` : `"${school}.csv"`;
 
-      fs.writeFile(`${filePath}.csv`, spreadsheetContent, (error) => {
-        if(error) {
-          alert(`An error occured: ${error.message}`);
-        } else {
-          alert(`File successfully created!\nCheck for file${plural} named ${fileNames} in folder "${folderName}".`);
-        }
-      });
-
+      // fs.writeFile(`${filePath}.csv`, spreadsheetContent, (error) => {
+      //   if(error) {
+      //     alert(`An error occured: ${error.message}`);
+      //   } else {
+      //     alert(`File successfully created!\nCheck for file${plural} named ${fileNames} in folder "${folderName}".`);
+      //   }
+      // });
 
       if (includeImageData) {
         const groupArray = createGroupArray(countArray);
         const imageDataContent = createImageData(nameArray, groupArray, date, school);
-        fs.writeFile(`${filePath}.txt`, imageDataContent, (error) => {
-          if (error) {
-            alert(`An error occured when creating image data file: ${error.message}`);
-          }
-        })
+        // fs.writeFile(`${filePath}.txt`, imageDataContent, (error) => {
+        //   if (error) {
+        //     alert(`An error occured when creating image data file: ${error.message}`);
+        //   }
+        // })
       }
     }
   });
