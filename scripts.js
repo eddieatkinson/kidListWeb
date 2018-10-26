@@ -18,22 +18,24 @@ function getNames(fileArray) {
   return nameArray;
 }
 
-function getNameWithExtension(wholeFileName) {
-  const wholeFileNameArray = wholeFileName.split(slash);
-  const fileNameWithExtension = wholeFileNameArray.pop();
+// function getNameWithExtension(wholeFileName) {
+//   const wholeFileNameArray = wholeFileName.split(slash);
+//   const fileNameWithExtension = wholeFileNameArray.pop();
   
-  fileLocation = wholeFileNameArray.join(slash);
+//   fileLocation = wholeFileNameArray.join(slash);
   
-  return fileNameWithExtension;
-}
+//   return fileNameWithExtension;
+// }
 
 function removeExtension(fileName) {
-  const nameWithoutExtension = fileName.replace(/\.[^slash.]+$/, '');
+  const nameWithoutExtension = fileName.replace(/\..*/, '');
+  // console.log(nameWithoutExtension);
   return nameWithoutExtension;
 }
 
 function removeJPEGNumber(fileName) {
   const justName = fileName.replace(/\-.+/, ''); // Remove anything after the first dash encaountered
+  // console.log(justName);
   return justName;
 }
 
@@ -122,11 +124,11 @@ function separateNameAndClass(fileName) {
   return [className, nameOnly];
 }
 
-function getFolderName(fileLocation) {
-  const fileLocationArray = fileLocation.split(slash);
-  const folderName = fileLocationArray.pop();
-  return folderName;
-}
+// function getFolderName(fileLocation) {
+//   const fileLocationArray = fileLocation.split(slash);
+//   const folderName = fileLocationArray.pop();
+//   return folderName;
+// }
 
 $(document).ready(() => {
   let uniqueNameArray = [];
@@ -172,7 +174,7 @@ $(document).ready(() => {
   // });
   $('.form').on('click', '#submit', () => {
     const files = $('#readFiles')[0].files;
-    console.log(files);
+    // console.log(files);
     const count = $('#count').val();
     const school = $('#school').val();
     const date = $('#date').val();
@@ -183,13 +185,18 @@ $(document).ready(() => {
       alert('All fields are required');
     } else {
       nameArray = getNames(files);
+      // console.log(nameArray);
       uniqueNameArray = _.uniq(nameArray);
+      console.log(uniqueNameArray);
+      countArray = getCount(nameArray, uniqueNameArray);
+      console.log(count, countArray);
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
-      
-      const filePath = `${fileLocation}${slash}${school}`;
+      console.log(commaSeparatedClassArray);
+      // const filePath = `${fileLocation}${slash}${school}`;
       const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
-      const folderName = getFolderName(fileLocation);
+      console.log(spreadsheetContent);
+      // const folderName = getFolderName(fileLocation);
       const includeImageData = $('#imageData:checked').val();
       const fileWordPlural = includeImageData ? 's' : '';
       const downloadButton = `<button class="btn-large" id="download">Download file${fileWordPlural}</button>`;
