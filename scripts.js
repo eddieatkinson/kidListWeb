@@ -8,7 +8,7 @@ const slash = navigator.platform == 'Win32' ? '\\' : '/';
 
 function getNames(fileArray) {
   const nameArray = _.map(fileArray, (file) => {
-    console.log(file.name);
+    // console.log(file.name);
     const fileNameWithExtension = file.name;
     fullFileNameArray.push(fileNameWithExtension);
     const nameWithoutExtension = removeExtension(fileNameWithExtension);
@@ -134,10 +134,11 @@ $(document).ready(() => {
   let uniqueNameArray = [];
   let countArray;
   let nameArray;
-  let spreadsheetContent;
-  let school;
-  let count;
-  let date;
+  // let spreadsheetContent;
+  // let school;
+  // let count;
+  // let date;
+  // let includeImageData = false;
   const formContent = $('.form');
   const formHTML = `
     <div>
@@ -180,9 +181,9 @@ $(document).ready(() => {
   $('.form').on('click', '#submit', () => {
     const files = $('#readFiles')[0].files;
     // console.log(files);
-    count = $('#count').val();
-    school = $('#school').val();
-    date = $('#date').val();
+    const count = $('#count').val();
+    const school = $('#school').val();
+    const date = $('#date').val();
     
     if (_.isEmpty(files)) {
       alert('Please select files');
@@ -192,24 +193,44 @@ $(document).ready(() => {
       nameArray = getNames(files);
       // console.log(nameArray);
       uniqueNameArray = _.uniq(nameArray);
-      console.log(uniqueNameArray);
+      // console.log(uniqueNameArray);
       countArray = getCount(nameArray, uniqueNameArray);
-      console.log(count, countArray);
+      // console.log(count, countArray);
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
-      console.log(commaSeparatedClassArray);
+      // console.log(commaSeparatedClassArray);
       // const filePath = `${fileLocation}${slash}${school}`;
-      spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
-      console.log(spreadsheetContent);
+      const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
+      // console.log(spreadsheetContent);
       // const folderName = getFolderName(fileLocation);
       const includeImageData = $('#imageData:checked').val();
-      const fileWordPlural = includeImageData ? 's' : '';
-      const downloadButton = `<button class="btn-large" id="downloadBtn">Download file${fileWordPlural}</button>`;
-      $('#download').append(downloadButton);
+      // const fileWordPlural = includeImageData ? 's' : '';
+      // const downloadButton = `<button class="btn-large" id="downloadBtn">Download file${fileWordPlural}</button>`;
+      // $('#download').append(downloadButton);
       const plural = includeImageData ? 's' : '';
 
       const fileNames = includeImageData ? `"${school}.csv" and "${school}.txt"` : `"${school}.csv"`;
-
+      // const includeImageData = $('#imageData:checked').val();
+      function download() {
+        var downloadCSV = document.createElement('a');
+        downloadCSV.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
+        downloadCSV.setAttribute('download', `${school}.csv`);
+        downloadCSV.click();
+        // console.log(includeImageData);
+        if (includeImageData) {
+          const groupArray = createGroupArray(countArray);
+          // console.log('Include it!');
+          const imageDataContent = createImageData(nameArray, groupArray, date, school);
+          var downloadTXT = document.createElement('a');
+          downloadTXT.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(imageDataContent)}`);
+          downloadTXT.setAttribute('download', `${school}.txt`);
+          downloadTXT.click();
+        }
+      }
+      setTimeout(() => {
+        download();
+      }, 500);
+    // console.log('downloading!');
       // fs.writeFile(`${filePath}.csv`, spreadsheetContent, (error) => {
       //   if(error) {
       //     alert(`An error occured: ${error.message}`);
@@ -218,27 +239,38 @@ $(document).ready(() => {
       //   }
       // });
 
-      if (includeImageData) {
-        const groupArray = createGroupArray(countArray);
-        const imageDataContent = createImageData(nameArray, groupArray, date, school);
-        // fs.writeFile(`${filePath}.txt`, imageDataContent, (error) => {
-        //   if (error) {
-        //     alert(`An error occured when creating image data file: ${error.message}`);
-        //   }
-        // })
-      }
+      // if (includeImageData) {
+      //   console.log('this line!');
+      //   const groupArray = createGroupArray(countArray);
+      //   const imageDataContent = createImageData(nameArray, groupArray, date, school);
+      //   // fs.writeFile(`${filePath}.txt`, imageDataContent, (error) => {
+      //   //   if (error) {
+      //   //     alert(`An error occured when creating image data file: ${error.message}`);
+      //   //   }
+      //   // })
+      // }
     }
   });
-  $('.form').on('click', '#downloadBtn', () => {
-    function download() {
-      var downloadA = document.createElement('a');
-      downloadA.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
-      downloadA.setAttribute('download', `${school}.csv`);
-      downloadA.click();
-    }
-    setTimeout(() => {
-      download();
-    }, 500);
-    console.log('downloading!');
-  });
+  // $('.form').on('click', '#downloadBtn', () => {
+  //   const includeImageData = $('#imageData:checked').val();
+  //   function download() {
+  //     var downloadCSV = document.createElement('a');
+  //     downloadCSV.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
+  //     downloadCSV.setAttribute('download', `${school}.csv`);
+  //     downloadCSV.click();
+  //     console.log(includeImageData);
+  //     if (includeImageData) {
+  //       const groupArray = createGroupArray(countArray);
+  //       console.log('Include it!');
+  //       var downloadTXT = document.createElement('a');
+  //       downloadTXT.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
+  //       downloadTXT.setAttribute('download', `${school}.txt`);
+  //       downloadTXT.click();
+  //     }
+  //   }
+  //   setTimeout(() => {
+  //     download();
+  //   }, 500);
+  //   console.log('downloading!');
+  // });
 });
