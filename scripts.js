@@ -134,6 +134,10 @@ $(document).ready(() => {
   let uniqueNameArray = [];
   let countArray;
   let nameArray;
+  let spreadsheetContent;
+  let school;
+  let count;
+  let date;
   const formContent = $('.form');
   const formHTML = `
     <div>
@@ -151,6 +155,7 @@ $(document).ready(() => {
       </form>
     </div>
     <button class="btn-large" id="submit">Create List!</button>
+    <div id="download"></div>
   `;
   const noShowRequirements = checkForNoShowRequirements();
   if (noShowRequirements) {
@@ -175,9 +180,9 @@ $(document).ready(() => {
   $('.form').on('click', '#submit', () => {
     const files = $('#readFiles')[0].files;
     // console.log(files);
-    const count = $('#count').val();
-    const school = $('#school').val();
-    const date = $('#date').val();
+    count = $('#count').val();
+    school = $('#school').val();
+    date = $('#date').val();
     
     if (_.isEmpty(files)) {
       alert('Please select files');
@@ -194,13 +199,13 @@ $(document).ready(() => {
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
       console.log(commaSeparatedClassArray);
       // const filePath = `${fileLocation}${slash}${school}`;
-      const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
+      spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
       console.log(spreadsheetContent);
       // const folderName = getFolderName(fileLocation);
       const includeImageData = $('#imageData:checked').val();
       const fileWordPlural = includeImageData ? 's' : '';
-      const downloadButton = `<button class="btn-large" id="download">Download file${fileWordPlural}</button>`;
-
+      const downloadButton = `<button class="btn-large" id="downloadBtn">Download file${fileWordPlural}</button>`;
+      $('#download').append(downloadButton);
       const plural = includeImageData ? 's' : '';
 
       const fileNames = includeImageData ? `"${school}.csv" and "${school}.txt"` : `"${school}.csv"`;
@@ -223,5 +228,17 @@ $(document).ready(() => {
         // })
       }
     }
+  });
+  $('.form').on('click', '#downloadBtn', () => {
+    function download() {
+      var downloadA = document.createElement('a');
+      downloadA.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
+      downloadA.setAttribute('download', `${school}.csv`);
+      downloadA.click();
+    }
+    setTimeout(() => {
+      download();
+    }, 500);
+    console.log('downloading!');
   });
 });
