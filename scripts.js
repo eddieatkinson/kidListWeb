@@ -120,14 +120,15 @@ $(document).ready(() => {
         <input id="count" type="number" min="1" placeholder="How many images of each child?" />
         <input id="school" type="text" placeholder="School name" />
         <div id="dateSection"></div>
-        <label>
-          <input id="imageData" type="checkbox" />
-          <span>Check here if you'd like an image data file.</span>
-        </label>
+        <div id="checkBox">
+          <label>
+            <input id="imageData" type="checkbox" />
+            <span>Check here if you'd like an image data file.</span>
+          </label>
+        </div>
       </form>
     </div>
     <button class="btn-large waves-effect" id="submit">Create List!</button>
-    <div id="download"></div>
   `;
   const noShowRequirements = checkForNoShowRequirements();
   if (noShowRequirements) {
@@ -140,7 +141,7 @@ $(document).ready(() => {
     }
     formContent.html(formHTML);
   });
-  $('.form').on('change', '#readFiles', (event) => {
+  $('.form').on('change', '#readFiles', (event) => { // Change label content depending on files chosen
     let fileName = '';
     const readFiles = $('#readFiles')[0];
     const numberOfFiles = readFiles.files && readFiles.files.length;
@@ -155,7 +156,6 @@ $(document).ready(() => {
     }
   });
   $('.form').on('click', '#imageData', () => {
-    console.log('Radio clicked!');
     const dateHTML = $('#imageData:checked').val() ? '<label for="date">Date shot</label><input id="date" type="date" placeholder="Date shot" />' : '';
     $('#dateSection').html(dateHTML);
   });
