@@ -1,14 +1,8 @@
-// const { dialog } = electron.remote; // Load remote compnent that contains the dialog dependency
-// const lodash = require(['node_modules/lodash/']);
-// const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
-
 const fullFileNameArray = [];
 let fileLocation;
-const slash = navigator.platform == 'Win32' ? '\\' : '/';
 
 function getNames(fileArray) {
   const nameArray = _.map(fileArray, (file) => {
-    // console.log(file.name);
     const fileNameWithExtension = file.name;
     fullFileNameArray.push(fileNameWithExtension);
     const nameWithoutExtension = removeExtension(fileNameWithExtension);
@@ -18,24 +12,13 @@ function getNames(fileArray) {
   return nameArray;
 }
 
-// function getNameWithExtension(wholeFileName) {
-//   const wholeFileNameArray = wholeFileName.split(slash);
-//   const fileNameWithExtension = wholeFileNameArray.pop();
-  
-//   fileLocation = wholeFileNameArray.join(slash);
-  
-//   return fileNameWithExtension;
-// }
-
 function removeExtension(fileName) {
   const nameWithoutExtension = fileName.replace(/\..*/, '');
-  // console.log(nameWithoutExtension);
   return nameWithoutExtension;
 }
 
 function removeJPEGNumber(fileName) {
   const justName = fileName.replace(/\-.+/, ''); // Remove anything after the first dash encaountered
-  // console.log(justName);
   return justName;
 }
 
@@ -124,38 +107,26 @@ function separateNameAndClass(fileName) {
   return [className, nameOnly];
 }
 
-// function getFolderName(fileLocation) {
-//   const fileLocationArray = fileLocation.split(slash);
-//   const folderName = fileLocationArray.pop();
-//   return folderName;
-// }
-
 $(document).ready(() => {
   let uniqueNameArray = [];
   let countArray;
   let nameArray;
-  // let spreadsheetContent;
-  // let school;
-  // let count;
-  // let date;
-  // let includeImageData = false;
   const formContent = $('.form');
   const formHTML = `
     <div>
       <form>
-        <!-- <input id="file" type="file" multiple /> -->
-        <input class="btn-small" id="readFiles" type="file" multiple value="Select files" />
+        <input id="readFiles" class="inputFile" type="file" data-multiple-caption="{count} files selected" multiple value="Select files" />
+        <label class="btn waves-effect" for="readFiles">Choose photos</label>
         <input id="count" type="number" min="1" placeholder="How many images of each child?" />
         <input id="school" type="text" placeholder="School name" />
-        <label for="date">Date shot</label>
-        <input id="date" type="date" placeholder="Date shot" />
+        <div id="dateSection"></div>
         <label>
           <input id="imageData" type="checkbox" />
           <span>Check here if you'd like an image data file.</span>
         </label>
       </form>
     </div>
-    <button class="btn-large" id="submit">Create List!</button>
+    <button class="btn-large waves-effect" id="submit">Create List!</button>
     <div id="download"></div>
   `;
   const noShowRequirements = checkForNoShowRequirements();
@@ -169,108 +140,64 @@ $(document).ready(() => {
     }
     formContent.html(formHTML);
   });
-  // $('.form').on('click', '#readFiles', () => {
-  //   // dialog.showOpenDialog({ properties: [
-  //   //     'openFile', 'multiSelections',
-  //   //   ]}, (fileNames) => {
-  //   //       nameArray = getNames(fileNames);
-  //   //       uniqueNameArray = uniq(nameArray);
-  //   //       countArray = getCount(nameArray, uniqueNameArray);
-  //   //     });
-  // });
+  $('.form').on('change', '#readFiles', (event) => {
+    let fileName = '';
+    const readFiles = $('#readFiles')[0];
+    const numberOfFiles = readFiles.files && readFiles.files.length;
+    if (numberOfFiles > 1) {
+      fileName = (readFiles.getAttribute('data-multiple-caption') || '').replace('{count}', numberOfFiles);
+    } else if (numberOfFiles) {
+      fileName = readFiles.files[0].name;
+    }
+
+    if (fileName) {
+      $('#readFiles').next('label').html(fileName);
+    }
+  });
+  $('.form').on('click', '#imageData', () => {
+    console.log('Radio clicked!');
+    const dateHTML = $('#imageData:checked').val() ? '<label for="date">Date shot</label><input id="date" type="date" placeholder="Date shot" />' : '';
+    $('#dateSection').html(dateHTML);
+  });
   $('.form').on('click', '#submit', () => {
     const files = $('#readFiles')[0].files;
-    // console.log(files);
     const count = $('#count').val();
     const school = $('#school').val();
     const date = $('#date').val();
+    const includeImageData = $('#imageData:checked').val();
     
     if (_.isEmpty(files)) {
       alert('Please select files');
-    } else if (!count || !school || !date) {
+    } else if (!count || !school || (includeImageData && !date)) {
       alert('All fields are required');
     } else {
       nameArray = getNames(files);
-      // console.log(nameArray);
       uniqueNameArray = _.uniq(nameArray);
-      // console.log(uniqueNameArray);
       countArray = getCount(nameArray, uniqueNameArray);
-      // console.log(count, countArray);
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
-      // console.log(commaSeparatedClassArray);
-      // const filePath = `${fileLocation}${slash}${school}`;
       const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
-      // console.log(spreadsheetContent);
-      // const folderName = getFolderName(fileLocation);
-      const includeImageData = $('#imageData:checked').val();
-      // const fileWordPlural = includeImageData ? 's' : '';
-      // const downloadButton = `<button class="btn-large" id="downloadBtn">Download file${fileWordPlural}</button>`;
-      // $('#download').append(downloadButton);
       const plural = includeImageData ? 's' : '';
 
       const fileNames = includeImageData ? `"${school}.csv" and "${school}.txt"` : `"${school}.csv"`;
-      // const includeImageData = $('#imageData:checked').val();
       function download() {
         var downloadCSV = document.createElement('a');
         downloadCSV.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
         downloadCSV.setAttribute('download', `${school}.csv`);
         downloadCSV.click();
-        // console.log(includeImageData);
         if (includeImageData) {
           const groupArray = createGroupArray(countArray);
-          // console.log('Include it!');
           const imageDataContent = createImageData(nameArray, groupArray, date, school);
           var downloadTXT = document.createElement('a');
           downloadTXT.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(imageDataContent)}`);
           downloadTXT.setAttribute('download', `${school}.txt`);
           downloadTXT.click();
         }
+        alert(`File${plural} successfully created!\nCheck for file${plural} named ${fileNames} in your "Downloads" folder.`);
       }
       setTimeout(() => {
         download();
       }, 500);
-    // console.log('downloading!');
-      // fs.writeFile(`${filePath}.csv`, spreadsheetContent, (error) => {
-      //   if(error) {
-      //     alert(`An error occured: ${error.message}`);
-      //   } else {
-      //     alert(`File successfully created!\nCheck for file${plural} named ${fileNames} in folder "${folderName}".`);
-      //   }
-      // });
-
-      // if (includeImageData) {
-      //   console.log('this line!');
-      //   const groupArray = createGroupArray(countArray);
-      //   const imageDataContent = createImageData(nameArray, groupArray, date, school);
-      //   // fs.writeFile(`${filePath}.txt`, imageDataContent, (error) => {
-      //   //   if (error) {
-      //   //     alert(`An error occured when creating image data file: ${error.message}`);
-      //   //   }
-      //   // })
-      // }
     }
   });
-  // $('.form').on('click', '#downloadBtn', () => {
-  //   const includeImageData = $('#imageData:checked').val();
-  //   function download() {
-  //     var downloadCSV = document.createElement('a');
-  //     downloadCSV.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
-  //     downloadCSV.setAttribute('download', `${school}.csv`);
-  //     downloadCSV.click();
-  //     console.log(includeImageData);
-  //     if (includeImageData) {
-  //       const groupArray = createGroupArray(countArray);
-  //       console.log('Include it!');
-  //       var downloadTXT = document.createElement('a');
-  //       downloadTXT.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(spreadsheetContent)}`);
-  //       downloadTXT.setAttribute('download', `${school}.txt`);
-  //       downloadTXT.click();
-  //     }
-  //   }
-  //   setTimeout(() => {
-  //     download();
-  //   }, 500);
-  //   console.log('downloading!');
-  // });
 });
