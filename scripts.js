@@ -55,9 +55,7 @@ function addMultiples(count, uniqueNameArray, countArray) {
 }
 
 function separateClassWithComma(filesWithMultiples) {
-  console.log(filesWithMultiples);
   const commaSeparatedClassArray = _.map(filesWithMultiples, (file) => {
-    console.log(file);
     const fileWithComma = file ? file.replace(' ', ',') : '';
     return fileWithComma;
   });
@@ -174,11 +172,8 @@ $(document).ready(() => {
       alert('All fields are required');
     } else {
       nameArray = getNames(files);
-      console.log(nameArray);
       uniqueNameArray = _.uniq(nameArray);
-      console.log(uniqueNameArray);
       countArray = getCount(nameArray, uniqueNameArray);
-      console.log(countArray);
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
       const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
